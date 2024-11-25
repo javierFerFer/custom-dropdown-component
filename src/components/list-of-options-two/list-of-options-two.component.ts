@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { delay, Observable, of } from 'rxjs';
+import { Component, inject, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { fadeInFadeOut } from '../../animations/custom-dropdown.animation';
+import { PokemonService } from '../../services/pokemon.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
 
 @Component({
@@ -15,7 +16,6 @@ import { SpinnerComponent } from '../spinner/spinner.component';
   ],
   animations: [
     fadeInFadeOut,
-    
   ]
 })
 export class ListOfOptionsTwoComponent implements OnInit {
@@ -26,27 +26,9 @@ export class ListOfOptionsTwoComponent implements OnInit {
 
   key: string | number = 'name';
 
+  private pkService = inject(PokemonService);
 
   ngOnInit(): void {
-    console.log('test me');
-    
-    this.collection$ = of(
-      [
-        {
-          id: 1,
-          name: 'Option 1'
-        },
-        {
-          id: 2,
-          name: 'Option 2'
-        },
-        {
-          id: 3,
-          name: 'Option 3'
-        }
-      ]
-    ).pipe(
-      delay(3000),
-    );
+    this.collection$ = this.pkService.getPokemons();
   }
 }

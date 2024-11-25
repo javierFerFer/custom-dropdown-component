@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -47,5 +48,6 @@ export class App {
 bootstrapApplication(App, {
     providers: [
       provideAnimationsAsync(),
+      provideHttpClient()
     ]
   });
