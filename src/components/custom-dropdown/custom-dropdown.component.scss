@@ -1,0 +1,30 @@
+.container {
+    cursor: pointer;
+    max-width: 355px;
+    border: 1px solid red;
+    font-family: 'Poppins-Light';
+
+    *:not(mat-icon) {
+        font-family: 'Poppins-Light';
+    }
+
+    mat-icon {
+        margin-left: 8px;
+        margin-bottom: 1px;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 5px 5px 8px;
+    }
+
+    .container-options {
+        display: grid;
+        
+        .inner-container-options {
+            overflow: hidden;
+        }
+    }
+}

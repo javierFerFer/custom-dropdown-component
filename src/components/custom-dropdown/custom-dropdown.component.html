@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="header" (click)="toggleContent()">
+    select me!
+  <mat-icon fontIcon="chevron_left" [@rotate]="showContent ? 'rotate' : 'normal'"></mat-icon>
+  </div>
+  @if(showContent) {
+    <div class="container-options" @showOpenClose>
+      <div #content class="inner-container-options">
+        <ng-template [ngTemplateOutlet]="templateRef">
+        </ng-template>
+      </div>
+    </div>
+  }
+</div>

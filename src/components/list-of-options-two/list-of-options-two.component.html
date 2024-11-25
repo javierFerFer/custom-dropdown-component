@@ -1,0 +1,22 @@
+<ng-container *ngIf="{ collection: collection$ | async } as tmpState">
+  @if (tmpState.collection) {
+    <ul @fadeInFadeOut>
+      @for (item of tmpState.collection; track item[id]) {
+        <li>
+          {{item[key]}}
+        </li>
+      }
+    </ul>
+  } @else {
+    <app-spinner
+    [style.position]="(tmpState.collection) ? 'absolute' : 'relative'"
+    style="
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    "
+    >
+  </app-spinner>
+  }
+</ng-container>
