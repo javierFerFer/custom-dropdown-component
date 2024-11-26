@@ -5,6 +5,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { CustomDropdownComponent } from './components/custom-dropdown/custom-dropdown.component';
 import { ListOfOptionsTwoComponent } from './components/list-of-options-two/list-of-options-two.component';
 import { ListOfOptionsComponent } from './components/list-of-options/list-of-options.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
 
 
 @Component({
@@ -18,16 +19,32 @@ import { ListOfOptionsComponent } from './components/list-of-options/list-of-opt
 
     <app-custom-dropdown>
       <ng-template>
-        <app-list-of-options-two></app-list-of-options-two>
+        <app-search-bar (changeEventEmitter)="searchChange($event)"></app-search-bar>
+        <app-list-of-options-two
+        style="
+          max-height: 250px;
+          overflow-y: scroll;
+          overflow: auto;
+        "
+        [searchProperty]="searchProperty"></app-list-of-options-two>
       </ng-template>
     </app-custom-dropdown>
 
   `,
   standalone: true,
-  imports: [CustomDropdownComponent, ListOfOptionsComponent, ListOfOptionsTwoComponent]
+  imports: [
+    CustomDropdownComponent,
+    ListOfOptionsComponent,
+    ListOfOptionsTwoComponent,
+    SearchBarComponent
+  ]
 })
 export class App {
   name = 'Angular';
+
+  searchProperty = {
+    search: ''
+  };
 
   public collection = [
     {
@@ -43,6 +60,13 @@ export class App {
       name: 'Option 3'
     }
   ];
+
+  searchChange(value: string) {
+    this.searchProperty = {
+      search: value
+    }
+  }
+
 }
 
 bootstrapApplication(App, {
