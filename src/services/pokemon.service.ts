@@ -11,8 +11,8 @@ export class PokemonService {
   private listOfOfPokemons = new BehaviorSubject<any>([]);
   public listOfOfPokemons$ = this.listOfOfPokemons.asObservable();
 
-  getPokemons() {
-    const url = 'https://pokeapi.co/api/v2/pokemon?limit=300&offset=0';
+  getPokemons(numberOfPokemons: number) {
+    const url = `https://pokeapi.co/api/v2/pokemon?limit=${numberOfPokemons}&offset=0`;
     return this.http.get(url)
     .pipe(
       delay(2000),

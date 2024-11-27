@@ -1,32 +1,55 @@
 <ng-container *ngIf="{ 
   collection: collection$ | async,
-  isSearching: isSearching$ | async
+  isSearching: isSearching$ | async,
+  partialLoading: partialLoading$ | async
  } as tmpState">
   @if (!tmpState.isSearching) {
-    <ul @fadeInFadeOut>
-      @for (item of tmpState.collection; track item[id]) {
-        <li style="
+  <ul @fadeInFadeOut>
+    @for (item of tmpState.collection; track item[id]; let last = $last) {
+    <li style="
         display: flex;
         align-items: center;
         justify-content: center;
       ">
+      @if (!last) {
+      <div>
+        {{item[key]}}
+        <app-poke-image [url]="item['url']">
+        </app-poke-image>
+      </div>
+      } @else {
+      <div>
+        <ng-template [appLoadMore] (appLoadMore)="
+        (tmpState.collection.length > 1) ? loadMoreElements($event) : null
+        ">
           {{item[key]}}
-          <app-poke-image
-          [url]="item['url']"></app-poke-image>
-        </li>
+          <app-poke-image [url]="item['url']">
+          </app-poke-image>
+        </ng-template>
+      </div>
       }
-    </ul>
-  } @else {
-    <app-spinner
+    </li>
+    @if (last && tmpState.partialLoading) {
+      <app-spinner
       style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 5rem;
+      "
+      ></app-spinner>
+    }
+    }
+  </ul>
+  } @else {
+  <app-spinner style="
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 200px;
       position: relative;
-      "
-      >
-    </app-spinner>
+      ">
+  </app-spinner>
   }
 </ng-container>

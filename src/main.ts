@@ -19,14 +19,15 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
 
     <app-custom-dropdown>
       <ng-template>
-        <app-search-bar (changeEventEmitter)="searchChange($event)"></app-search-bar>
+        <app-search-bar [innitState]="searchProperty" (changeEventEmitter)="searchChange($event)"></app-search-bar>
         <app-list-of-options-two
         style="
           max-height: 250px;
           overflow-y: scroll;
           overflow: auto;
         "
-        [searchProperty]="searchProperty"></app-list-of-options-two>
+        [searchProperty]="searchProperty">
+      </app-list-of-options-two>
       </ng-template>
     </app-custom-dropdown>
 

@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, take } from 'rxjs';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, finalize, Observable, skip, take } from 'rxjs';
 import { fadeInFadeOut } from '../../animations/custom-dropdown.animation';
+import { LoadMoreDirective } from '../../directives/load-more.directive';
 import { PokemonService } from '../../services/pokemon.service';
 import { PokeImageComponent } from '../poke-image/poke-image.component';
 import { SpinnerComponent } from '../spinner/spinner.component';
@@ -14,27 +15,40 @@ import { SpinnerComponent } from '../spinner/spinner.component';
   imports: [
     CommonModule,
     SpinnerComponent,
-    PokeImageComponent
+    PokeImageComponent,
+    LoadMoreDirective
   ],
   animations: [
     fadeInFadeOut,
   ]
 })
-export class ListOfOptionsTwoComponent implements OnInit{
+export class ListOfOptionsTwoComponent implements OnInit, OnDestroy{
   
   
   collection$!: Observable<any>;
+
   isSearching: BehaviorSubject<boolean> = new BehaviorSubject(false);
   isSearching$: Observable<boolean> = this.isSearching.asObservable();
+
+  loadMore: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
+  loadMore$: Observable<void> = this.loadMore.asObservable();
+
+  partialLoading: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  partialLoading$: Observable<boolean> = this.partialLoading.asObservable();
 
   id: string | number = 'id';
 
   key: string | number = 'name';
 
+  numberOfPokemons: number = 15;
+
+  private subscriptions: any[] = [];
+
   private _searchProperty: any = {};
   @Input()
   set searchProperty(value: any) {
     this._searchProperty = value;
+    
     if (value.search) {
       this.findPokemon(value.search);
     } else {
@@ -45,22 +59,57 @@ export class ListOfOptionsTwoComponent implements OnInit{
 
   ngOnInit(): void {
     this.collection$ = this.pkService.listOfOfPokemons$;
+
+    this.subscriptions.push(
+      this.loadMore$
+      .pipe(
+        skip(1), //prevent default emission
+      )
+      .subscribe(() => {
+        this.numberOfPokemons += this.numberOfPokemons;
+        this.getPartialPokemons();
+      })
+    )
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+
+  loadMoreElements(event: any) {
+    this.loadMore.next();
   }
 
   private getPokemons() {
     this.isSearching.next(true);
-    this.pkService.getPokemons()
+    this.subscriptions.push(
+      this.pkService.getPokemons(this.numberOfPokemons)
     .pipe(
       take(1),
     )
     .subscribe(() => {
       this.isSearching.next(false)
     })
+    )
+  }
+
+  private getPartialPokemons() {
+    this.partialLoading.next(true);
+    this.subscriptions.push(
+      this.pkService.getPokemons(this.numberOfPokemons)
+    .pipe(
+      take(1),
+    )
+    .subscribe(() => {
+      this.partialLoading.next(false);
+    })
+    )
   }
 
   private findPokemon(value: string) {
     this.isSearching.next(true);
-    this.pkService.findPokemon(value)
+    this.subscriptions.push(
+      this.pkService.findPokemon(value)
     .pipe(
       finalize(() => {
         take(1),
@@ -70,5 +119,6 @@ export class ListOfOptionsTwoComponent implements OnInit{
     .subscribe(() => {
       this.isSearching.next(false)
     })
+    )
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 
@@ -14,6 +14,9 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class SearchBarComponent implements OnInit {
   
+  @Input()
+  innitState!: any;
+
   @Output()
   changeEventEmitter = new EventEmitter<string>();
 
@@ -24,6 +27,10 @@ export class SearchBarComponent implements OnInit {
   }) 
 
   ngOnInit(): void {
+    if (this.innitState?.search) {
+      this.internalForm.controls.search.patchValue(this.innitState.search, { emitEvent: false });
+    }
+
     this.internalForm.valueChanges
     .pipe(
       debounceTime(400)
