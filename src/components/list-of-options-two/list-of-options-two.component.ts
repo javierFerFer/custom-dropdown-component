@@ -40,7 +40,8 @@ export class ListOfOptionsTwoComponent implements OnInit, OnDestroy{
 
   key: string | number = 'name';
 
-  numberOfPokemons: number = 15;
+  numberOfPokemons: number = 10;
+  offset: number = 0;
 
   private subscriptions: any[] = [];
 
@@ -66,7 +67,7 @@ export class ListOfOptionsTwoComponent implements OnInit, OnDestroy{
         skip(1), //prevent default emission
       )
       .subscribe(() => {
-        this.numberOfPokemons += this.numberOfPokemons;
+        this.offset += this.numberOfPokemons;
         this.getPartialPokemons();
       })
     )
@@ -96,7 +97,7 @@ export class ListOfOptionsTwoComponent implements OnInit, OnDestroy{
   private getPartialPokemons() {
     this.partialLoading.next(true);
     this.subscriptions.push(
-      this.pkService.getPokemons(this.numberOfPokemons)
+      this.pkService.getPokemons(this.numberOfPokemons, this.offset)
     .pipe(
       take(1),
     )

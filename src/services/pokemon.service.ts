@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, delay, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, delay, forkJoin, map, Observable, switchMap, take, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +11,8 @@ export class PokemonService {
   private listOfOfPokemons = new BehaviorSubject<any>([]);
   public listOfOfPokemons$ = this.listOfOfPokemons.asObservable();
 
-  getPokemons(numberOfPokemons: number) {
-    const url = `https://pokeapi.co/api/v2/pokemon?limit=${numberOfPokemons}&offset=0`;
+  getPokemons(numberOfPokemons: number, offset: number = 0): Observable<any[]> {
+    const url = `https://pokeapi.co/api/v2/pokemon?limit=${numberOfPokemons}&offset=${offset}`;
     return this.http.get(url)
     .pipe(
       delay(2000),
@@ -50,6 +50,19 @@ export class PokemonService {
         )
       )
         return forkJoin(allRequest);
+      }),
+      switchMap((listOfPokemons) => {
+        return this.listOfOfPokemons$.pipe(
+          take(1),
+          map((pokemons) => {
+            let pokemonsList = 
+              (listOfPokemons.length > 1) 
+                ? [...new Set([...pokemons, ...listOfPokemons])]
+                : [...listOfPokemons]
+            ;
+            return pokemonsList;
+          })
+        );
       }),
       tap((pokemons) => {
         this.listOfOfPokemons.next(pokemons)
